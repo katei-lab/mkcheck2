@@ -1,0 +1,6 @@
+/build
+/.cache
+/.build
+a.out
+/Tests/SnapshotTests.tmp
+/.index-build

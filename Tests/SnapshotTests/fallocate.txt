@@ -1,0 +1,6 @@
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests/fallocate.sh
+PROCESS (image: /usr/bin/fallocate)
+  INPUT Tests/SnapshotTests.tmp/fallocate.tmp
+  OUTPUT Tests/SnapshotTests.tmp/fallocate.tmp/foo.txt

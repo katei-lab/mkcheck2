@@ -1,0 +1,27 @@
+PROCESS (image: .build/debug/mkcheck2-test-utils)
+  INPUT .build/x86_64-unknown-linux-gnu/debug
+  INPUT Tests/SnapshotTests.tmp/chdir.tmp
+  OUTPUT Tests/SnapshotTests.tmp/chdir.tmp/baz.txt
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests
+  INPUT Tests/SnapshotTests.tmp
+  INPUT Tests/SnapshotTests.tmp/chdir.tmp
+  INPUT Tests/SnapshotTests/chdir.sh
+PROCESS (image: /usr/bin/mkdir)
+  INPUT Tests/SnapshotTests.tmp/chdir.tmp
+  OUTPUT Tests/SnapshotTests.tmp/chdir.tmp/baz
+PROCESS (image: /usr/bin/touch)
+  INPUT Tests/SnapshotTests.tmp/chdir.tmp/baz/qux.txt
+PROCESS (image: /usr/bin/x86_64-linux-gnu-ld)
+  INPUT Tests/SnapshotTests.tmp/chdir.tmp
+  INPUT Tests/SnapshotTests.tmp/chdir.tmp/chdir
+  OUTPUT Tests/SnapshotTests.tmp/chdir.tmp/chdir
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT 
+  INPUT Tests/SnapshotTests/chdir.c
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT Tests/SnapshotTests
+  INPUT Tests/SnapshotTests/chdir.c
+PROCESS (image: Tests/SnapshotTests.tmp/chdir.tmp/chdir)
+  INPUT Tests/SnapshotTests.tmp/chdir.tmp/baz/qux.txt

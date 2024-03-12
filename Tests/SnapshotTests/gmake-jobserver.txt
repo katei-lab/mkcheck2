@@ -1,0 +1,18 @@
+PROCESS (image: /bin/dash)
+  INPUT 
+  INPUT Tests/SnapshotTests/gmake-jobserver
+PROCESS (image: /bin/dash)
+  INPUT 
+  INPUT Tests/SnapshotTests/gmake-jobserver
+PROCESS (image: /bin/dash)
+  INPUT 
+  INPUT Tests/SnapshotTests/gmake-jobserver
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests/gmake-jobserver.sh
+PROCESS (image: /usr/bin/make)
+  INPUT Tests/SnapshotTests/gmake-jobserver
+  INPUT Tests/SnapshotTests/gmake-jobserver/Makefile
+PROCESS (image: /usr/bin/make)
+  INPUT Tests/SnapshotTests/gmake-jobserver
+  INPUT Tests/SnapshotTests/gmake-jobserver/Makefile.sub

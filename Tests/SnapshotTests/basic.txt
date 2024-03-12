@@ -1,0 +1,12 @@
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests.tmp/basic.tmp
+  INPUT Tests/SnapshotTests.tmp/basic.tmp/bar.txt
+  INPUT Tests/SnapshotTests/basic.sh
+  OUTPUT Tests/SnapshotTests.tmp/basic.tmp/bar.txt
+PROCESS (image: /usr/bin/cat)
+  INPUT Tests/SnapshotTests.tmp/basic.tmp/foo.txt
+PROCESS (image: /usr/bin/stat)
+  INPUT Tests/SnapshotTests.tmp/basic.tmp/foo.txt
+PROCESS (image: /usr/bin/touch)
+  INPUT Tests/SnapshotTests.tmp/basic.tmp/foo.txt

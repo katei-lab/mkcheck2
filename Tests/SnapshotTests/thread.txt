@@ -1,0 +1,22 @@
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests
+  INPUT Tests/SnapshotTests.tmp
+  INPUT Tests/SnapshotTests.tmp/thread.tmp
+  INPUT Tests/SnapshotTests/thread.sh
+PROCESS (image: /usr/bin/x86_64-linux-gnu-ld)
+  INPUT Tests/SnapshotTests.tmp/thread.tmp
+  INPUT Tests/SnapshotTests.tmp/thread.tmp/thread
+  OUTPUT Tests/SnapshotTests.tmp/thread.tmp/thread
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT 
+  INPUT Tests/SnapshotTests/thread.c
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT Tests/SnapshotTests
+  INPUT Tests/SnapshotTests/thread.c
+PROCESS (image: Tests/SnapshotTests.tmp/thread.tmp/thread)
+  INPUT Tests/SnapshotTests.tmp/thread.tmp
+  INPUT Tests/SnapshotTests.tmp/thread.tmp/main.txt
+  INPUT Tests/SnapshotTests.tmp/thread.tmp/thread.txt
+  OUTPUT Tests/SnapshotTests.tmp/thread.tmp/main.txt
+  OUTPUT Tests/SnapshotTests.tmp/thread.tmp/thread.txt

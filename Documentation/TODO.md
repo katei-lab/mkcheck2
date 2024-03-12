@@ -1,0 +1,4 @@
+- [ ] Track chdir
+- [ ] Filter syscalls by file path
+- [ ] Filter same events before submitting to user space
+- [ ] Filter out failed syscalls

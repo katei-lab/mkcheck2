@@ -1,0 +1,14 @@
+PROCESS (image: .build/debug/mkcheck2-test-utils)
+  INPUT .build/x86_64-unknown-linux-gnu/debug
+PROCESS (image: .build/debug/mkcheck2-test-utils)
+  INPUT .build/x86_64-unknown-linux-gnu/debug
+  INPUT Tests/SnapshotTests.tmp/dir.tmp/check2
+  OUTPUT Tests/SnapshotTests.tmp/dir.tmp/check2/check3
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests/dir.sh
+PROCESS (image: /usr/bin/mkdir)
+  INPUT Tests/SnapshotTests.tmp/dir.tmp
+PROCESS (image: /usr/bin/mkdir)
+  INPUT Tests/SnapshotTests.tmp/dir.tmp
+  OUTPUT Tests/SnapshotTests.tmp/dir.tmp/check2

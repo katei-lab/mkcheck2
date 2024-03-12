@@ -1,0 +1,23 @@
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests.tmp/ftruncate.tmp
+  INPUT Tests/SnapshotTests.tmp/ftruncate.tmp/foo.txt
+  INPUT Tests/SnapshotTests/ftruncate.sh
+  OUTPUT Tests/SnapshotTests.tmp/ftruncate.tmp/foo.expected
+  OUTPUT Tests/SnapshotTests.tmp/ftruncate.tmp/foo.txt
+PROCESS (image: /usr/bin/diff)
+  INPUT Tests/SnapshotTests.tmp/ftruncate.tmp/foo.expected
+  INPUT Tests/SnapshotTests.tmp/ftruncate.tmp/foo.txt
+PROCESS (image: /usr/bin/x86_64-linux-gnu-ld)
+  INPUT Tests/SnapshotTests.tmp/ftruncate.tmp
+  INPUT Tests/SnapshotTests.tmp/ftruncate.tmp/ftruncate
+  OUTPUT Tests/SnapshotTests.tmp/ftruncate.tmp/ftruncate
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT 
+  INPUT Tests/SnapshotTests/ftruncate.c
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT Tests/SnapshotTests
+  INPUT Tests/SnapshotTests/ftruncate.c
+PROCESS (image: Tests/SnapshotTests.tmp/ftruncate.tmp/ftruncate)
+  INPUT Tests/SnapshotTests.tmp/ftruncate.tmp
+  OUTPUT Tests/SnapshotTests.tmp/ftruncate.tmp/foo.txt

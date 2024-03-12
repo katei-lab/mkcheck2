@@ -1,0 +1,3 @@
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests/clone3.sh

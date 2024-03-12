@@ -1,0 +1,20 @@
+PROCESS (image: .build/debug/mkcheck2-test-utils)
+  INPUT .build/x86_64-unknown-linux-gnu/debug
+  INPUT Tests/SnapshotTests.tmp/access.tmp/foo.txt
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests/access.sh
+PROCESS (image: /usr/bin/touch)
+  INPUT Tests/SnapshotTests.tmp/access.tmp/foo.txt
+PROCESS (image: /usr/bin/x86_64-linux-gnu-ld)
+  INPUT Tests/SnapshotTests.tmp/access.tmp
+  INPUT Tests/SnapshotTests.tmp/access.tmp/access
+  OUTPUT Tests/SnapshotTests.tmp/access.tmp/access
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT 
+  INPUT Tests/SnapshotTests/access.c
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT Tests/SnapshotTests
+  INPUT Tests/SnapshotTests/access.c
+PROCESS (image: Tests/SnapshotTests.tmp/access.tmp/access)
+  INPUT Tests/SnapshotTests.tmp/access.tmp/foo.txt

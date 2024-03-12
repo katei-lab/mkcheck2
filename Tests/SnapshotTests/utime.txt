@@ -1,0 +1,8 @@
+PROCESS (image: .build/debug/mkcheck2-test-utils)
+  INPUT .build/x86_64-unknown-linux-gnu/debug
+  INPUT Tests/SnapshotTests.tmp/utime.tmp/foo.txt
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests/utime.sh
+PROCESS (image: /usr/bin/touch)
+  INPUT Tests/SnapshotTests.tmp/utime.tmp/foo.txt

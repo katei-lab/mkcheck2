@@ -1,0 +1,14 @@
+PROCESS (image: .build/debug/mkcheck2-test-utils)
+  INPUT .build/x86_64-unknown-linux-gnu/debug
+  INPUT Tests/SnapshotTests.tmp/rename.tmp/dir2
+  OUTPUT Tests/SnapshotTests.tmp/rename.tmp/dir2/bar.txt
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests/rename.sh
+PROCESS (image: /usr/bin/mkdir)
+  INPUT Tests/SnapshotTests.tmp/rename.tmp
+  OUTPUT Tests/SnapshotTests.tmp/rename.tmp/dir1
+PROCESS (image: /usr/bin/mkdir)
+  INPUT Tests/SnapshotTests.tmp/rename.tmp
+  OUTPUT Tests/SnapshotTests.tmp/rename.tmp/dir2
+PROCESS (image: /usr/bin/touch)

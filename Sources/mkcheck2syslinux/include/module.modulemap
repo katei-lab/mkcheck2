@@ -1,0 +1,4 @@
+module mkcheck2syslinux {
+    header "mkcheck2syslinux.h"
+    export *
+}

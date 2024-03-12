@@ -1,0 +1,21 @@
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests/statat.sh
+PROCESS (image: /usr/bin/stat)
+  INPUT Tests/SnapshotTests.tmp/statat.tmp/bar.txt
+PROCESS (image: /usr/bin/touch)
+  INPUT Tests/SnapshotTests.tmp/statat.tmp/bar.txt
+PROCESS (image: /usr/bin/touch)
+  INPUT Tests/SnapshotTests.tmp/statat.tmp/foo.txt
+PROCESS (image: /usr/bin/x86_64-linux-gnu-ld)
+  INPUT Tests/SnapshotTests.tmp/statat.tmp
+  INPUT Tests/SnapshotTests.tmp/statat.tmp/statat
+  OUTPUT Tests/SnapshotTests.tmp/statat.tmp/statat
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT 
+  INPUT Tests/SnapshotTests/statat.c
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT Tests/SnapshotTests
+  INPUT Tests/SnapshotTests/statat.c
+PROCESS (image: Tests/SnapshotTests.tmp/statat.tmp/statat)
+  INPUT Tests/SnapshotTests.tmp/statat.tmp/foo.txt

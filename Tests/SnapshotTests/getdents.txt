@@ -1,0 +1,12 @@
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests/getdents.sh
+PROCESS (image: /usr/bin/ls)
+  INPUT Tests/SnapshotTests.tmp/getdents.tmp/check
+PROCESS (image: /usr/bin/mkdir)
+  INPUT Tests/SnapshotTests.tmp/getdents.tmp
+  OUTPUT Tests/SnapshotTests.tmp/getdents.tmp/check
+PROCESS (image: /usr/bin/touch)
+  INPUT Tests/SnapshotTests.tmp/getdents.tmp/check/bar.txt
+PROCESS (image: /usr/bin/touch)
+  INPUT Tests/SnapshotTests.tmp/getdents.tmp/check/foo.txt

@@ -1,0 +1,3 @@
+module mkcheck2bpf_skelton {
+    header "mkcheck2.skelton.h"
+}

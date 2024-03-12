@@ -1,0 +1,20 @@
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests/stat.sh
+PROCESS (image: /usr/bin/ln)
+  INPUT Tests/SnapshotTests.tmp/stat.tmp
+  OUTPUT Tests/SnapshotTests.tmp/stat.tmp/foo.txt
+PROCESS (image: /usr/bin/touch)
+  INPUT Tests/SnapshotTests.tmp/stat.tmp/foo.txt
+PROCESS (image: /usr/bin/x86_64-linux-gnu-ld)
+  INPUT Tests/SnapshotTests.tmp/stat.tmp
+  INPUT Tests/SnapshotTests.tmp/stat.tmp/stat
+  OUTPUT Tests/SnapshotTests.tmp/stat.tmp/stat
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT 
+  INPUT Tests/SnapshotTests/stat.c
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT Tests/SnapshotTests
+  INPUT Tests/SnapshotTests/stat.c
+PROCESS (image: Tests/SnapshotTests.tmp/stat.tmp/stat)
+  INPUT Tests/SnapshotTests.tmp/stat.tmp/foo.txt

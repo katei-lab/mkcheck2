@@ -1,0 +1,37 @@
+PROCESS (image: .build/debug/mkcheck2-test-utils)
+  INPUT .build/x86_64-unknown-linux-gnu/debug
+  INPUT Tests/SnapshotTests.tmp/link.tmp/dir1
+  OUTPUT Tests/SnapshotTests.tmp/link.tmp/dir1/foo.txt
+PROCESS (image: .build/debug/mkcheck2-test-utils)
+  INPUT .build/x86_64-unknown-linux-gnu/debug
+  INPUT Tests/SnapshotTests.tmp/link.tmp/dir2
+  OUTPUT Tests/SnapshotTests.tmp/link.tmp/dir2/bar.txt
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests/link.sh
+PROCESS (image: /usr/bin/mkdir)
+  INPUT Tests/SnapshotTests.tmp/link.tmp
+  OUTPUT Tests/SnapshotTests.tmp/link.tmp/dir1
+PROCESS (image: /usr/bin/mkdir)
+  INPUT Tests/SnapshotTests.tmp/link.tmp
+  OUTPUT Tests/SnapshotTests.tmp/link.tmp/dir2
+PROCESS (image: /usr/bin/touch)
+  INPUT Tests/SnapshotTests.tmp/link.tmp/dir1/foo.txt
+PROCESS (image: /usr/bin/touch)
+  INPUT Tests/SnapshotTests.tmp/link.tmp/foo.txt
+PROCESS (image: /usr/bin/x86_64-linux-gnu-ld)
+  INPUT Tests/SnapshotTests.tmp/link.tmp
+  INPUT Tests/SnapshotTests.tmp/link.tmp/link
+  OUTPUT Tests/SnapshotTests.tmp/link.tmp/link
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT 
+  INPUT Tests/SnapshotTests/link.c
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT Tests/SnapshotTests
+  INPUT Tests/SnapshotTests/link.c
+PROCESS (image: Tests/SnapshotTests.tmp/link.tmp/link)
+  INPUT Tests/SnapshotTests.tmp/link.tmp
+  OUTPUT Tests/SnapshotTests.tmp/link.tmp/bar.txt
+PROCESS (image: Tests/SnapshotTests.tmp/link.tmp/link)
+  INPUT Tests/SnapshotTests.tmp/link.tmp
+  OUTPUT Tests/SnapshotTests.tmp/link.tmp/foo.txt

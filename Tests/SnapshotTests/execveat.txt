@@ -1,0 +1,11 @@
+PROCESS (image: .build/debug/mkcheck2-test-utils)
+  INPUT .build/x86_64-unknown-linux-gnu/debug
+PROCESS (image: .build/x86_64-unknown-linux-gnu/debug/mkcheck2-test-utils)
+  INPUT .build/x86_64-unknown-linux-gnu/debug
+  INPUT Tests/SnapshotTests.tmp/execveat.tmp
+  OUTPUT Tests/SnapshotTests.tmp/execveat.tmp/file1
+PROCESS (image: /usr/bin/basename)
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests/execveat.sh
+PROCESS (image: /usr/bin/dirname)

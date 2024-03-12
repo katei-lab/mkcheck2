@@ -1,0 +1,23 @@
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests.tmp/mmap.tmp
+  INPUT Tests/SnapshotTests.tmp/mmap.tmp/foo.txt
+  INPUT Tests/SnapshotTests/mmap.sh
+  OUTPUT Tests/SnapshotTests.tmp/mmap.tmp/bar.txt
+  OUTPUT Tests/SnapshotTests.tmp/mmap.tmp/foo.txt
+PROCESS (image: /usr/bin/x86_64-linux-gnu-ld)
+  INPUT Tests/SnapshotTests.tmp/mmap.tmp
+  INPUT Tests/SnapshotTests.tmp/mmap.tmp/mmap
+  OUTPUT Tests/SnapshotTests.tmp/mmap.tmp/mmap
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT 
+  INPUT Tests/SnapshotTests/mmap.c
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT Tests/SnapshotTests
+  INPUT Tests/SnapshotTests/mmap.c
+PROCESS (image: Tests/SnapshotTests.tmp/mmap.tmp/mmap)
+  INPUT Tests/SnapshotTests.tmp/mmap.tmp
+  INPUT Tests/SnapshotTests.tmp/mmap.tmp/bar.txt
+  OUTPUT Tests/SnapshotTests.tmp/mmap.tmp/bar.txt
+PROCESS (image: Tests/SnapshotTests.tmp/mmap.tmp/mmap)
+  INPUT Tests/SnapshotTests.tmp/mmap.tmp/foo.txt

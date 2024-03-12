@@ -1,0 +1,12 @@
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests/clang.sh
+PROCESS (image: /usr/bin/cat)
+  INPUT Tests/SnapshotTests.tmp/clang.tmp
+  INPUT Tests/SnapshotTests.tmp/clang.tmp/foo.c
+  OUTPUT Tests/SnapshotTests.tmp/clang.tmp/foo.c
+PROCESS (image: /usr/lib/llvm-14/bin/clang)
+  INPUT 
+  INPUT Tests/SnapshotTests.tmp/clang.tmp
+  INPUT Tests/SnapshotTests.tmp/clang.tmp/foo.c
+  OUTPUT Tests/SnapshotTests.tmp/clang.tmp/foo.o

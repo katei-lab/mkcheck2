@@ -1,0 +1,12 @@
+PROCESS (image: /usr/bin/bash)
+  INPUT 
+  INPUT Tests/SnapshotTests.tmp/pipe.tmp
+  INPUT Tests/SnapshotTests.tmp/pipe.tmp/foo.txt
+  INPUT Tests/SnapshotTests/pipe.sh
+  OUTPUT Tests/SnapshotTests.tmp/pipe.tmp/foo.txt
+PROCESS (image: /usr/bin/cat)
+  INPUT Tests/SnapshotTests.tmp/pipe.tmp/foo.txt
+PROCESS (image: /usr/bin/xxd)
+  INPUT Tests/SnapshotTests.tmp/pipe.tmp
+  INPUT Tests/SnapshotTests.tmp/pipe.tmp/bar.txt
+  OUTPUT Tests/SnapshotTests.tmp/pipe.tmp/bar.txt
