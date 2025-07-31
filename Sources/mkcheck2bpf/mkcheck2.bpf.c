@@ -13,15 +13,16 @@
 #endif
 
 // Skip if path is "/proc/self/exe"
-#define SKIP_PROC_SELF_EXEC(path) do { \
-  const char exe_path[] = "/proc/self/exe"; \
-  char short_buffer[sizeof(exe_path)]; \
-  if (bpf_core_read_user_str(short_buffer, sizeof(short_buffer), path) >= 0) { \
-    if (__builtin_memcmp(short_buffer, exe_path, sizeof(exe_path)) == 0) { \
-      return 0; \
-    } \
-  } \
-} while (0)
+#define SKIP_PROC_SELF_EXEC(path)                                                                                      \
+  do {                                                                                                                 \
+    const char exe_path[] = "/proc/self/exe";                                                                          \
+    char short_buffer[sizeof(exe_path)];                                                                               \
+    if (bpf_core_read_user_str(short_buffer, sizeof(short_buffer), path) >= 0) {                                       \
+      if (__builtin_memcmp(short_buffer, exe_path, sizeof(exe_path)) == 0) {                                           \
+        return 0;                                                                                                      \
+      }                                                                                                                \
+    }                                                                                                                  \
+  } while (0)
 
 const volatile pid_t root_ppid = 0;
 
@@ -43,8 +44,7 @@ struct {
   __type(value, struct mkcheck2_error);
 } fatal_errors SEC(".maps");
 
-__attribute__((noinline))
-static void __report_fatal_error(int type, int line) {
+__attribute__((noinline)) static void __report_fatal_error(int type, int line) {
   static u32 key = 0;
   struct mkcheck2_error error = {0};
   error.type = type;
@@ -128,9 +128,8 @@ static inline bool is_tracing_pid(pid_t pid, u64 *uid) {
   return false;
 }
 
-__attribute__((always_inline))
-static inline void __init_event_header(pid_t pid, u64 uid, enum mkcheck2_event_type type, int line,
-                                       struct mkcheck2_event_header *header) {
+__attribute__((always_inline)) static inline void __init_event_header(pid_t pid, u64 uid, enum mkcheck2_event_type type,
+                                                                      int line, struct mkcheck2_event_header *header) {
   header->pid = pid;
   header->uid = uid;
   header->_type = type;
@@ -161,34 +160,33 @@ struct {
   __type(value, struct mkcheck2_staging_event);
 } staging_events SEC(".maps");
 
-static struct mkcheck2_staging_event *__staging_event_allocate_generic(
-  void *staging_events_map, void *empty_event,
-  u64 pid_tgid, int line
-) {
+static struct mkcheck2_staging_event *__staging_event_allocate_generic(void *staging_events_map, void *empty_event,
+                                                                       u64 pid_tgid, int line) {
   struct mkcheck2_staging_event *event = NULL;
   int ret = bpf_map_update_elem(staging_events_map, &pid_tgid, empty_event, BPF_NOEXIST);
   if (ret != 0) {
     event = bpf_map_lookup_elem(staging_events_map, &pid_tgid);
-    #if DEBUG_LOG
+#if DEBUG_LOG
     if (event) {
       struct mkcheck2_event_header *header;
       switch (event->type_kind) {
-        case MKCHECK2_STAGING_EVENT_TYPE_EVENT:
-          header = &event->u.event.header;
-          break;
-        case MKCHECK2_STAGING_EVENT_TYPE_FAT_EVENT:
-          header = &event->u.fat_event.header;
-          break;
-        case MKCHECK2_STAGING_EVENT_TYPE_FAT2_EVENT:
-          header = &event->u.fat2_event.header;
-          break;
-        default:
-          header = NULL;
-          break;
+      case MKCHECK2_STAGING_EVENT_TYPE_EVENT:
+        header = &event->u.event.header;
+        break;
+      case MKCHECK2_STAGING_EVENT_TYPE_FAT_EVENT:
+        header = &event->u.fat_event.header;
+        break;
+      case MKCHECK2_STAGING_EVENT_TYPE_FAT2_EVENT:
+        header = &event->u.fat2_event.header;
+        break;
+      default:
+        header = NULL;
+        break;
       }
-      mkcheck2_debug("Staging event conflict for pid=%d, type=%d, line=%d", header->pid, header->_type, header->source_line);
+      mkcheck2_debug("Staging event conflict for pid=%d, type=%d, line=%d", header->pid, header->_type,
+                     header->source_line);
     }
-    #endif
+#endif
     int error_type = event ? kErrorStagingConflict : kErrorStagingEventFull;
     __report_fatal_error(error_type, line);
     return NULL;
@@ -203,14 +201,14 @@ static struct mkcheck2_staging_event *__staging_event_allocate_generic(
 }
 
 /// Deallocate the staged event for the given pid
-static inline void staging_event_deallocate(u64 pid_tgid) {
-  bpf_map_delete_elem(&staging_events, &pid_tgid);
-}
+static inline void staging_event_deallocate(u64 pid_tgid) { bpf_map_delete_elem(&staging_events, &pid_tgid); }
 
 static struct mkcheck2_event *__staging_event_allocate(u64 pid_tgid, int line) {
   static struct mkcheck2_staging_event empty_event = {0};
-  struct mkcheck2_staging_event *event = __staging_event_allocate_generic(&staging_events, &empty_event, pid_tgid, line);
-  if (!event) return NULL;
+  struct mkcheck2_staging_event *event =
+      __staging_event_allocate_generic(&staging_events, &empty_event, pid_tgid, line);
+  if (!event)
+    return NULL;
   event->type_kind = MKCHECK2_STAGING_EVENT_TYPE_EVENT;
   return &event->u.event;
 }
@@ -219,8 +217,10 @@ static struct mkcheck2_event *__staging_event_allocate(u64 pid_tgid, int line) {
 
 static struct mkcheck2_fat_event *__staging_fat_event_allocate(u64 pid_tgid, int line) {
   static struct mkcheck2_staging_event empty_event = {0};
-  struct mkcheck2_staging_event *event = __staging_event_allocate_generic(&staging_events, &empty_event, pid_tgid, line);
-  if (!event) return NULL;
+  struct mkcheck2_staging_event *event =
+      __staging_event_allocate_generic(&staging_events, &empty_event, pid_tgid, line);
+  if (!event)
+    return NULL;
   event->type_kind = MKCHECK2_STAGING_EVENT_TYPE_FAT_EVENT;
   return &event->u.fat_event;
 }
@@ -229,8 +229,10 @@ static struct mkcheck2_fat_event *__staging_fat_event_allocate(u64 pid_tgid, int
 
 static struct mkcheck2_fat2_event *__staging_fat2_event_allocate(u64 pid_tgid, int line) {
   static struct mkcheck2_staging_event empty_event = {0};
-  struct mkcheck2_staging_event *event = __staging_event_allocate_generic(&staging_events, &empty_event, pid_tgid, line);
-  if (!event) return NULL;
+  struct mkcheck2_staging_event *event =
+      __staging_event_allocate_generic(&staging_events, &empty_event, pid_tgid, line);
+  if (!event)
+    return NULL;
   event->type_kind = MKCHECK2_STAGING_EVENT_TYPE_FAT2_EVENT;
   return &event->u.fat2_event;
 }
@@ -312,10 +314,7 @@ static inline int read_fd_path_strings(int fd, mkcheck2_path_t path) {
 
 /// Submit the staged event to the ring buffer
 /// @return true if the event was submitted, false if the event was ignored
-__attribute__((always_inline))
-static inline bool __probe_return(
-  struct trace_event_raw_sys_exit *ctx
-) {
+__attribute__((always_inline)) static inline bool __probe_return(struct trace_event_raw_sys_exit *ctx) {
   mkcheck2_debug("probe_return[id=%d]: %d", ctx->id, ctx->ret);
   u64 pid_tgid = bpf_get_current_pid_tgid();
   struct mkcheck2_staging_event *event = bpf_map_lookup_elem(&staging_events, &pid_tgid);
@@ -368,18 +367,17 @@ static inline int probe_return(struct trace_event_raw_sys_exit *ctx) {
   return 0;
 }
 
-#define __TRACE_SYSCALL_ENTER_EXIT_EVENT(name, probe) \
-  SEC("tracepoint/syscalls/sys_exit_" #name) \
-  int tracepoint__syscalls__sys_exit_##name(struct trace_event_raw_sys_exit *ctx) { return probe(ctx); } \
-  static inline int __tracepoint__syscalls__sys_enter_##name(struct trace_event_raw_sys_enter *ctx); \
-  SEC("tracepoint/syscalls/sys_enter_" #name) \
-  int tracepoint__syscalls__sys_enter_##name(struct trace_event_raw_sys_enter *ctx) { \
-    mkcheck2_debug("probe_enter[id=%d]: %d pid=%d", ctx->id, ctx->args[0], bpf_get_current_pid_tgid() >> 32); \
-    return __tracepoint__syscalls__sys_enter_##name(ctx); \
-  } \
+#define __TRACE_SYSCALL_ENTER_EXIT_EVENT(name, probe)                                                                  \
+  SEC("tracepoint/syscalls/sys_exit_" #name)                                                                           \
+  int tracepoint__syscalls__sys_exit_##name(struct trace_event_raw_sys_exit *ctx) { return probe(ctx); }               \
+  static inline int __tracepoint__syscalls__sys_enter_##name(struct trace_event_raw_sys_enter *ctx);                   \
+  SEC("tracepoint/syscalls/sys_enter_" #name)                                                                          \
+  int tracepoint__syscalls__sys_enter_##name(struct trace_event_raw_sys_enter *ctx) {                                  \
+    mkcheck2_debug("probe_enter[id=%d]: %d pid=%d", ctx->id, ctx->args[0], bpf_get_current_pid_tgid() >> 32);          \
+    return __tracepoint__syscalls__sys_enter_##name(ctx);                                                              \
+  }                                                                                                                    \
   static inline int __tracepoint__syscalls__sys_enter_##name(struct trace_event_raw_sys_enter *ctx)
-#define TRACE_SYSCALL_ENTER_EXIT_EVENT(name) \
-  __TRACE_SYSCALL_ENTER_EXIT_EVENT(name, probe_return)
+#define TRACE_SYSCALL_ENTER_EXIT_EVENT(name) __TRACE_SYSCALL_ENTER_EXIT_EVENT(name, probe_return)
 
 TRACE_SYSCALL_ENTER_EXIT_EVENT(execve) {
   struct mkcheck2_event *event = NULL;
@@ -421,9 +419,9 @@ err:
   return 0;
 }
 
-__attribute__((always_inline))
-static void __execveat_at_fdcwd(struct trace_event_raw_sys_enter *ctx, struct tracing_process_info pinfo, u64 pid_tgid,
-                                pid_t pid, pid_t ppid) {
+__attribute__((always_inline)) static void __execveat_at_fdcwd(struct trace_event_raw_sys_enter *ctx,
+                                                               struct tracing_process_info pinfo, u64 pid_tgid,
+                                                               pid_t pid, pid_t ppid) {
   struct mkcheck2_event *event = NULL;
   // Create an event and fill it
   event = staging_event_allocate(pid_tgid);
@@ -579,12 +577,10 @@ err:
   return 0;
 }
 
-__attribute__((always_inline))
-static inline void __submit_fd_event_with_dentry(
-  struct tracing_process_info *pinfo, u64 pid_tgid,
-  struct dentry *dentry, const struct inode *inode,
-  int type, int line
-) {
+__attribute__((always_inline)) static inline void __submit_fd_event_with_dentry(struct tracing_process_info *pinfo,
+                                                                                u64 pid_tgid, struct dentry *dentry,
+                                                                                const struct inode *inode, int type,
+                                                                                int line) {
   u32 ino = BPF_CORE_READ(inode, i_ino);
   if (!tracing_process_info_insert_fingerprint(pinfo, ino, type)) {
     // The fingerprint is already present
@@ -622,9 +618,8 @@ static inline void __submit_fd_event_with_dentry(
 #endif
 }
 
-static inline void __submit_fd_event_without_pid_check(
-  struct tracing_process_info *pinfo, u64 pid_tgid, int fd, int type, int line
-) {
+static inline void __submit_fd_event_without_pid_check(struct tracing_process_info *pinfo, u64 pid_tgid, int fd,
+                                                       int type, int line) {
   const struct inode *inode = NULL;
   struct dentry *dentry = get_tracing_dentry(fd, &inode);
   if (!dentry)
@@ -682,9 +677,8 @@ TRACE_SYSCALL_ENTER_EXIT_EVENT(pwritev) {
   return 0;
 }
 
-static inline void __submit_path_event_without_pid_check(
-  u64 pid_tgid, u64 uid, const void *path, enum mkcheck2_event_type type, int line
-) {
+static inline void __submit_path_event_without_pid_check(u64 pid_tgid, u64 uid, const void *path,
+                                                         enum mkcheck2_event_type type, int line) {
   pid_t pid = pid_tgid >> 32;
   struct mkcheck2_event *event = NULL;
   event = staging_event_allocate(pid_tgid);
@@ -722,7 +716,8 @@ static inline bool is_empty_string(const void *str) {
 static void __submit_path_at_event_without_pid_check(struct tracing_process_info *pinfo, u64 pid_tgid, int dfd,
                                                      const void *path, int type, int line) {
   if (dfd == AT_FDCWD) { // fast-path: no need to allocate buffer for base dirname
-    __submit_path_event_without_pid_check(pid_tgid, pinfo->uid, path, kEventTypeInput, line); // TODO: type can be Output or other
+    __submit_path_event_without_pid_check(pid_tgid, pinfo->uid, path, kEventTypeInput,
+                                          line); // TODO: type can be Output or other
     return;
   }
 
@@ -732,7 +727,8 @@ static void __submit_path_at_event_without_pid_check(struct tracing_process_info
     return;
 
   if (is_empty_string(path)) { // fast-path: empty path is the same as dfd
-    return __submit_fd_event_with_dentry(pinfo, pid_tgid, dentry, inode, kEventTypeInput, line); // TODO: type can be Output or other
+    return __submit_fd_event_with_dentry(pinfo, pid_tgid, dentry, inode, kEventTypeInput,
+                                         line); // TODO: type can be Output or other
   }
 
   struct mkcheck2_fat_event *event = NULL;
@@ -759,7 +755,8 @@ err:
   staging_event_deallocate(pid_tgid);
 }
 
-static void __submit_path_at_event(struct trace_event_raw_sys_enter *ctx, int dfd, const void *path, int type, int line) {
+static void __submit_path_at_event(struct trace_event_raw_sys_enter *ctx, int dfd, const void *path, int type,
+                                   int line) {
   u64 pid_tgid = bpf_get_current_pid_tgid();
   pid_t pid = pid_tgid >> 32;
   mkcheck2_debug("submit_path_at_event[id=%d]: pid=%d, path=%s", ctx->id, pid, (const char *)path);
@@ -773,7 +770,9 @@ static void __submit_path_at_event(struct trace_event_raw_sys_enter *ctx, int df
 
 #define submit_path_at_event(dfd, path, type) __submit_path_at_event(ctx, dfd, path, type, __LINE__)
 
-static inline void __submit_fat_path_event_without_pid_check(u64 pid_tgid, u64 uid, const void *path1, const void *path2, enum mkcheck2_event_type type, int line) {
+static inline void __submit_fat_path_event_without_pid_check(u64 pid_tgid, u64 uid, const void *path1,
+                                                             const void *path2, enum mkcheck2_event_type type,
+                                                             int line) {
   struct mkcheck2_fat_event *event = NULL;
   pid_t pid = pid_tgid >> 32;
   event = __staging_fat_event_allocate(pid_tgid, line);
@@ -794,7 +793,8 @@ err:
   __report_fatal_error(kErrorReadUserStr, line);
   return;
 }
-static inline void __submit_fat_path_event(const void *path1, const void *path2, enum mkcheck2_event_type type, int line) {
+static inline void __submit_fat_path_event(const void *path1, const void *path2, enum mkcheck2_event_type type,
+                                           int line) {
   u64 pid_tgid = bpf_get_current_pid_tgid();
   pid_t pid = pid_tgid >> 32;
   u64 uid;
@@ -806,8 +806,9 @@ static inline void __submit_fat_path_event(const void *path1, const void *path2,
 
 #define submit_fat_path_event(path1, path2, type) __submit_fat_path_event(path1, path2, type, __LINE__)
 
-__attribute__((always_inline))
-static inline void __submit_fd2_path2_at_event(struct trace_event_raw_sys_enter *ctx, int dfd1, int dfd2, const void *path1, const void *path2, int type, int line) {
+__attribute__((always_inline)) static inline void __submit_fd2_path2_at_event(struct trace_event_raw_sys_enter *ctx,
+                                                                              int dfd1, int dfd2, const void *path1,
+                                                                              const void *path2, int type, int line) {
   u64 pid_tgid = bpf_get_current_pid_tgid();
   pid_t pid = pid_tgid >> 32;
   u64 uid;
@@ -845,10 +846,12 @@ err:
   staging_event_deallocate(pid_tgid);
 }
 
-#define submit_fd2_path2_at_event(dfd1, dfd2, path1, path2, type) __submit_fd2_path2_at_event(ctx, dfd1, dfd2, path1, path2, type, __LINE__)
+#define submit_fd2_path2_at_event(dfd1, dfd2, path1, path2, type)                                                      \
+  __submit_fd2_path2_at_event(ctx, dfd1, dfd2, path1, path2, type, __LINE__)
 
-__attribute__((always_inline))
-static inline void __submit_fd1_path2_at_event(struct trace_event_raw_sys_enter *ctx, int dfd, const void *path1, const void *path2, int type, int line) {
+__attribute__((always_inline)) static inline void __submit_fd1_path2_at_event(struct trace_event_raw_sys_enter *ctx,
+                                                                              int dfd, const void *path1,
+                                                                              const void *path2, int type, int line) {
   u64 pid_tgid = bpf_get_current_pid_tgid();
   pid_t pid = pid_tgid >> 32;
   u64 uid;
@@ -882,7 +885,8 @@ err:
   staging_event_deallocate(pid_tgid);
 }
 
-#define submit_fd1_path2_at_event(dfd, path1, path2, type) __submit_fd1_path2_at_event(ctx, dfd, path1, path2, type, __LINE__)
+#define submit_fd1_path2_at_event(dfd, path1, path2, type)                                                             \
+  __submit_fd1_path2_at_event(ctx, dfd, path1, path2, type, __LINE__)
 
 TRACE_SYSCALL_ENTER_EXIT_EVENT(newstat) {
   submit_path_event((const void *)ctx->args[0], kEventTypeInput);
@@ -912,7 +916,9 @@ TRACE_SYSCALL_ENTER_EXIT_EVENT(mmap) {
   int prot = ctx->args[2];
   int flags = ctx->args[3];
   int fd = ctx->args[4];
-  if (fd == -1) { return 0; }
+  if (fd == -1) {
+    return 0;
+  }
   enum mkcheck2_event_type type = (flags & MAP_SHARED) && (prot & PROT_WRITE) ? kEventTypeOutput : kEventTypeInput;
   submit_fd_event(fd, type);
   return 0;
@@ -1006,11 +1012,13 @@ TRACE_SYSCALL_ENTER_EXIT_EVENT(fallocate) {
   return 0;
 }
 TRACE_SYSCALL_ENTER_EXIT_EVENT(linkat) {
-  submit_fd2_path2_at_event(ctx->args[0], ctx->args[2], (const void *)ctx->args[1], (const void *)ctx->args[3], kEventTypeLinkAt);
+  submit_fd2_path2_at_event(ctx->args[0], ctx->args[2], (const void *)ctx->args[1], (const void *)ctx->args[3],
+                            kEventTypeLinkAt);
   return 0;
 }
 TRACE_SYSCALL_ENTER_EXIT_EVENT(renameat) {
-  submit_fd2_path2_at_event(ctx->args[0], ctx->args[2], (const void *)ctx->args[1], (const void *)ctx->args[3], kEventTypeRenameAt);
+  submit_fd2_path2_at_event(ctx->args[0], ctx->args[2], (const void *)ctx->args[1], (const void *)ctx->args[3],
+                            kEventTypeRenameAt);
   return 0;
 }
 TRACE_SYSCALL_ENTER_EXIT_EVENT(symlinkat) {
